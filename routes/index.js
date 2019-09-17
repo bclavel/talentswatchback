@@ -7,15 +7,14 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Welcome to G-Pop Watch BackEnd' });
 });
 
-router.post('/createDirector', function(req, res, next) {
+router.post('/createdirector', function(req, res, next) {
 
   console.log('req.body', req.body);
 
-  var directorData = {
+  var directorData = new  directorModel({
     directorName : req.body.directorName,
     directorLoca : req.body.directorLoca,
     directorCat : req.body.directorCat,
-    directorSubCat : req.body.directorSubCat,
     directorTypePrint : req.body.directorTypePrint,
     directorTypeFilm : req.body.directorTypeFilm,
     directorTypeDop : req.body.directorTypeDop,
@@ -29,13 +28,40 @@ router.post('/createDirector', function(req, res, next) {
     directorWebsite : req.body.directorWebsite,
     directorVimeo : req.body.directorVimeo,
     directorInsta : req.body.directorInsta,
-    directorVideos : req.body.directorVideos,
+  })
+
+
+  directorData.directorVideos.push({
+    videoUrl : req.body.directorVideo1,
+    videoSource : 'Youtube'
+  })
+  directorData.directorVideos.push({
+    videoUrl : req.body.directorVideo2,
+    videoSource : 'Youtube'
+  })
+  directorData.directorVideos.push({
+    videoUrl : req.body.directorVideo3,
+    videoSource : 'Youtube'
+  })
+  directorData.directorVideos.push({
+    videoUrl : req.body.directorVideo4,
+    videoSource : 'Youtube'
+  })
+
+  var subCatList = req.body.directorSubCat.split(', ')
+
+  for (var i = 0; i < subCatList.length; i++) {
+    directorData.directorSubCat.push({
+      subCatLabel : subCatList[i]
+    })
   }
+
   console.log('directorData', directorData);
 
   directorData.save(
     function (error, director) {
       console.log('INDEX BACK - New director save', director);
+      console.log('error', error);
       res.json(director);
     });
   });

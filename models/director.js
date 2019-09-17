@@ -19,7 +19,7 @@ var directorSchema = mongoose.Schema({
   directorTypeDop : Boolean,
   directorSituation : String,
   directorContent : String,
-  directorContactEmail : Date,
+  directorContactEmail : String,
   directorContactPhone: String,
   directorLabel: String,
   directorReckitt : String,
