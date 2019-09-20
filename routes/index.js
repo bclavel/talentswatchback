@@ -7,6 +7,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Welcome to G-Pop Watch BackEnd' });
 });
 
+
 router.post('/createdirector', function(req, res, next) {
 
   console.log('req.body', req.body);
@@ -29,7 +30,6 @@ router.post('/createdirector', function(req, res, next) {
     directorVimeo : req.body.directorVimeo,
     directorInsta : req.body.directorInsta,
   })
-
 
   directorData.directorVideos.push({
     videoUrl : req.body.directorVideo1,
@@ -58,6 +58,8 @@ router.post('/createdirector', function(req, res, next) {
 
   console.log('directorData', directorData);
 
+  // TODO : Envoyer les données dans AppBase + récupérer son directorAppbaseId
+
   directorData.save(
     function (error, director) {
       console.log('INDEX BACK - New director save', director);
@@ -65,6 +67,68 @@ router.post('/createdirector', function(req, res, next) {
       res.json(director);
     });
   });
+
+
+router.get('/getdirector', function(req,res,next){
+
+  // TODO : fixer le problème de CORS
+
+  directorModel.findOne({directorAppbaseId : req.query.directorId})
+  .exec(function(err, director){
+    if (director) {
+      console.log('Director trouvé', director);
+      res.json(director);
+    } else {
+      console.log('walou pas de director');
+      res.json(err);
+    }
+  })
+
+});
+
+
+router.get('/getDirectorsList', function(req,res,next){
+
+  // TODO : trouver un moyen de retourner la liste complète des directors
+
+  var https = require('https');
+
+  var options = {
+    'method': 'POST',
+    'hostname': 'scalr.api.appbase.io',
+    'path': '/gpop-data2/_search?q=*.*',
+    'headers': {
+      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ=='
+    }
+  };
+
+  var req = https.request(options, function (res) {
+    var chunks = [];
+
+    res.on("data", function (chunk) {
+      chunks.push(chunk);
+    });
+
+    res.on("end", function (chunk) {
+      var body = Buffer.concat(chunks);
+      console.log(body.toString());
+      res.json(body);
+    });
+
+    res.on("error", function (error) {
+      console.error(error);
+    });
+  });
+
+  var postData = "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; ------WebKitFormBoundary7MA4YWxkTrZu0gW--";
+
+  // req.setHeader('content-type', 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW');
+
+  req.write(postData);
+
+  req.end();
+
+});
 
 
 module.exports = router;
