@@ -11,7 +11,7 @@ var videoSchema = mongoose.Schema({
 
 var directorSchema = mongoose.Schema({
   directorName : String,
-  directorAppbaseId : String,
+  // directorAppbaseId : String,
   directorLoca : String,
   directorCat : String,
   directorSubCat : [subCatSchema],

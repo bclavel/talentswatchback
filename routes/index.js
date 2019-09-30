@@ -12,7 +12,7 @@ router.post('/createdirector', function(req, res, next) {
 
   console.log('req.body', req.body);
 
-  var directorData = new  directorModel({
+  var directorData = new directorModel({
     directorName : req.body.directorName,
     directorLoca : req.body.directorLoca,
     directorCat : req.body.directorCat,
@@ -60,20 +60,80 @@ router.post('/createdirector', function(req, res, next) {
 
   // TODO : Envoyer les données dans AppBase + récupérer son directorAppbaseId
 
+  var https = require('https');
+
+  var options = {
+    'method': 'POST',
+    'hostname': 'scalr.api.appbase.io',
+    'path': '/gpop-data2/_doc',
+    'headers': {
+      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
+      'Content-Type': 'application/json'
+    }
+  };
+
+  var request = https.request(options, function (res) {
+    var chunks = [];
+
+    res.on("data", function (chunk) {
+      chunks.push(chunk);
+    });
+
+    res.on("end", function (chunk) {
+      var body = Buffer.concat(chunks);
+      console.log('Body', body.toString());
+    });
+
+    res.on("error", function (error) {
+      console.error(error);
+    });
+  });
+
+  var appBaseBody = {
+    name : req.body.directorName,
+    localisation : req.body.directorLoca,
+    category : req.body.directorCat,
+    subcategories : subCatList,
+    print : req.body.directorTypePrint,
+    film : req.body.directorTypeFilm,
+    DOP : req.body.directorTypeDop,
+    situation : req.body.directorSituation,
+    content : req.body.directorContent,
+    email : req.body.directorContactEmail,
+    phone : req.body.directorContactPhone,
+    label : req.body.directorLabel,
+    reckitt : req.body.directorReckitt,
+    contact : req.body.directorContacted,
+    website : req.body.directorWebsite,
+    vimeo : req.body.directorVimeo,
+    instagram : req.body.directorInsta,
+    video1 : req.body.directorVideo1,
+    video2 : req.body.directorVideo2,
+    video3 : req.body.directorVideo3,
+    video4 : req.body.directorVideo4
+  }
+
+  var appBaseData = JSON.stringify(appBaseBody)
+
+  var postData =  "{\n\t\"name\": \"appbase.io\"\n}";
+
+  request.write(appBaseData);
+
+  request.end();
+
   directorData.save(
     function (error, director) {
       console.log('INDEX BACK - New director save', director);
-      console.log('error', error);
+      console.log('INDEX BACK - New director error', error);
       res.json(director);
     });
+
   });
 
 
 router.get('/getdirector', function(req,res,next){
 
-  // TODO : fixer le problème de CORS
-
-  directorModel.findOne({directorAppbaseId : req.query.directorId})
+  directorModel.findOne({directorName : req.query.directorName})
   .exec(function(err, director){
     if (director) {
       console.log('Director trouvé', director);
