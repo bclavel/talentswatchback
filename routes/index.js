@@ -146,6 +146,22 @@ router.get('/getdirector', function(req,res,next){
 
 });
 
+router.get('/updatedirector', function(req,res,next){
+
+  directorModel.findOne({directorName : req.query.directorName})
+  .exec(function(err, director){
+    if (director) {
+      console.log('Director trouvé', director);
+      // mettre à jour en BDD + dans l'API
+      res.json(director);
+    } else {
+      console.log('walou pas de director');
+      res.json(err);
+    }
+  })
+
+});
+
 
 router.get('/getDirectorsList', function(req,res,next){
 
