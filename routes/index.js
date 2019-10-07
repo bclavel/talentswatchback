@@ -8,10 +8,82 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Welcome to G-Pop Watch BackEnd' });
 });
 
+const getId = function(opt){
+
+  return new Promise(function(resolve, reject){
+  var https = require('https');
+
+  var options = {
+    'method': 'POST',
+    'hostname': 'scalr.api.appbase.io',
+    'path': '/gpop-data2/_doc',
+    'headers': {
+      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
+      'Content-Type': 'application/json'
+    }
+  };
+
+  var request = https.request(options, function (res) {
+    var chunks = [];
+
+    res.on("data", function (chunk) {
+      chunks.push(chunk);
+    });
+
+    res.on("end", function (chunk) {
+      var body = Buffer.concat(chunks);
+      console.log('Body', body.toString());
+      return resolve(body.toString())
+    });
+
+    res.on("error", function (error) {
+      console.error(error);
+      return reject(error)
+    });
+  });
+
+  var subCatList = opt.directorSubCat.split(', ')
+
+  var appBaseBody = {
+    name : opt.directorName,
+    localisation : opt.directorLoca,
+    category : opt.directorCat,
+    subcategories : subCatList,
+    print : opt.directorTypePrint,
+    film : opt.directorTypeFilm,
+    DOP : opt.directorTypeDop,
+    situation : opt.directorSituation,
+    content : opt.directorContent,
+    email : opt.directorContactEmail,
+    phone : opt.directorContactPhone,
+    label : opt.directorLabel,
+    reckitt : opt.directorReckitt,
+    contact : opt.directorContacted,
+    website : opt.directorWebsite,
+    vimeo : opt.directorVimeo,
+    instagram : opt.directorInsta,
+    video1 : opt.directorVideo1,
+    video2 : opt.directorVideo2,
+    video3 : opt.directorVideo3,
+    video4 : opt.directorVideo4
+  }
+
+  var appBaseData = JSON.stringify(appBaseBody)
+
+  request.write(appBaseData);
+
+  request.end();
+
+  })
+}
 
 router.post('/createdirector', function(req, res, next) {
 
   console.log('req.body', req.body);
+
+  getId(req.body)
+  .then(function (data){
+  console.log("getId Promise data >>", data)
 
   var directorData = new directorModel({
     directorName : req.body.directorName,
@@ -30,6 +102,7 @@ router.post('/createdirector', function(req, res, next) {
     directorWebsite : req.body.directorWebsite,
     directorVimeo : req.body.directorVimeo,
     directorInsta : req.body.directorInsta,
+    directorAppbaseId : JSON.parse(data)["_id"]
   })
 
   directorData.directorVideos.push({
@@ -59,73 +132,18 @@ router.post('/createdirector', function(req, res, next) {
 
   console.log('directorData', directorData);
 
-  var https = require('https');
-
-  var options = {
-    'method': 'POST',
-    'hostname': 'scalr.api.appbase.io',
-    'path': '/gpop-data2/_doc',
-    'headers': {
-      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
-      'Content-Type': 'application/json'
-    }
-  };
-
-  var request = https.request(options, function (res) {
-    var chunks = [];
-
-    res.on("data", function (chunk) {
-      chunks.push(chunk);
-    });
-
-    res.on("end", function (chunk) {
-      var body = Buffer.concat(chunks);
-      console.log('Body', body.toString());
-    });
-
-    res.on("error", function (error) {
-      console.error(error);
-    });
-  });
-
-  var appBaseBody = {
-    name : req.body.directorName,
-    localisation : req.body.directorLoca,
-    category : req.body.directorCat,
-    subcategories : subCatList,
-    print : req.body.directorTypePrint,
-    film : req.body.directorTypeFilm,
-    DOP : req.body.directorTypeDop,
-    situation : req.body.directorSituation,
-    content : req.body.directorContent,
-    email : req.body.directorContactEmail,
-    phone : req.body.directorContactPhone,
-    label : req.body.directorLabel,
-    reckitt : req.body.directorReckitt,
-    contact : req.body.directorContacted,
-    website : req.body.directorWebsite,
-    vimeo : req.body.directorVimeo,
-    instagram : req.body.directorInsta,
-    video1 : req.body.directorVideo1,
-    video2 : req.body.directorVideo2,
-    video3 : req.body.directorVideo3,
-    video4 : req.body.directorVideo4
-  }
-
-  var appBaseData = JSON.stringify(appBaseBody)
-
-  request.write(appBaseData);
-
-  request.end();
-
   directorData.save(
     function (error, director) {
       console.log('CREATE DIRECTOR - director save', director);
       console.log('CREATE DIRECTOR - error', error);
-      res.json(director);
+      res.status(200).json(director);
     });
-
-  });
+  })
+  .catch(function (err){
+    console.log("err promise : ", err)
+    return res.sendStatus((200))
+  })
+});
 
 
 router.get('/getdirector', function(req,res,next){
@@ -186,6 +204,8 @@ router.post('/updatedirector', function(req,res,next){
         videoSource : 'Youtube'
       }
 
+      director.directorSubCat = []
+
       var subCatList = req.body.directorSubCat.split(', ')
 
       for (var i = 0; i < subCatList.length; i++) {
@@ -195,30 +215,20 @@ router.post('/updatedirector', function(req,res,next){
       }
 
       var https = require('https');
-      // TODO : Fix la query + lancer la recherche pour récupérer l'ID du director
-      var querystring = require('querystring');
 
-      var query = querystring.stringify(
-        {
-          match : { name : req.body.oldName }
-        }
-      )
-
-      console.log('query stringified', query);
-
-      var optionsSearch = {
-        'method': 'GET',
+      var optionsUpdate = {
+        'method': 'PUT',
         'hostname': 'scalr.api.appbase.io',
-        'path': `/gpop-data2/_doc/_search?q=${query}`,
+        'path': `/gpop-data2/_doc/${director.directorAppbaseId}`,
         'headers': {
           'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
           'Content-Type': 'application/json'
         }
       };
 
-      console.log('optionsSearch', optionsSearch);
+      console.log('optionsUpdate', optionsUpdate);
 
-      var searchReq = https.request(optionsSearch, function (res) {
+      var updateReq = https.request(optionsUpdate, function (res) {
         var chunks = [];
 
         res.on("data", function (chunk) {
@@ -235,70 +245,35 @@ router.post('/updatedirector', function(req,res,next){
         });
       });
 
-      var postData = "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; ------WebKitFormBoundary7MA4YWxkTrZu0gW--";
+      var appBaseBody = {
+        name : req.body.directorName,
+        localisation : req.body.directorLoca,
+        category : req.body.directorCat,
+        subcategories : subCatList,
+        print : req.body.directorTypePrint,
+        film : req.body.directorTypeFilm,
+        DOP : req.body.directorTypeDop,
+        situation : req.body.directorSituation,
+        content : req.body.directorContent,
+        email : req.body.directorContactEmail,
+        phone : req.body.directorContactPhone,
+        label : req.body.directorLabel,
+        reckitt : req.body.directorReckitt,
+        contact : req.body.directorContacted,
+        website : req.body.directorWebsite,
+        vimeo : req.body.directorVimeo,
+        instagram : req.body.directorInsta,
+        video1 : req.body.directorVideo1,
+        video2 : req.body.directorVideo2,
+        video3 : req.body.directorVideo3,
+        video4 : req.body.directorVideo4
+      }
 
-      // req.setHeader('content-type', 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW');
+      var appBaseData = JSON.stringify(appBaseBody)
 
-      searchReq.write(postData);
+      updateReq.write(appBaseData);
 
-      searchReq.end();
-      //
-      // var optionsUpdate = {
-      //   'method': 'PUT',
-      //   'hostname': 'scalr.api.appbase.io',
-      //   'path': '/gpop-data2/_doc/',
-      //   'headers': {
-      //     'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
-      //     'Content-Type': 'application/json'
-      //   }
-      // };
-      //
-      // var updateReq = https.request(options, function (res) {
-      //   var chunks = [];
-      //
-      //   res.on("data", function (chunk) {
-      //     chunks.push(chunk);
-      //   });
-      //
-      //   res.on("end", function (chunk) {
-      //     var body = Buffer.concat(chunks);
-      //     console.log('Body', body.toString());
-      //   });
-      //
-      //   res.on("error", function (error) {
-      //     console.error(error);
-      //   });
-      // });
-      //
-      // var appBaseBody = {
-      //   name : req.body.directorName,
-      //   localisation : req.body.directorLoca,
-      //   category : req.body.directorCat,
-      //   subcategories : subCatList,
-      //   print : req.body.directorTypePrint,
-      //   film : req.body.directorTypeFilm,
-      //   DOP : req.body.directorTypeDop,
-      //   situation : req.body.directorSituation,
-      //   content : req.body.directorContent,
-      //   email : req.body.directorContactEmail,
-      //   phone : req.body.directorContactPhone,
-      //   label : req.body.directorLabel,
-      //   reckitt : req.body.directorReckitt,
-      //   contact : req.body.directorContacted,
-      //   website : req.body.directorWebsite,
-      //   vimeo : req.body.directorVimeo,
-      //   instagram : req.body.directorInsta,
-      //   video1 : req.body.directorVideo1,
-      //   video2 : req.body.directorVideo2,
-      //   video3 : req.body.directorVideo3,
-      //   video4 : req.body.directorVideo4
-      // }
-      //
-      // var appBaseData = JSON.stringify(appBaseBody)
-      //
-      // updateReq.write(appBaseData);
-      //
-      // updateReq.end();
+      updateReq.end();
 
       director.save(
         function (error, director) {
