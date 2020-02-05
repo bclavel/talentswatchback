@@ -4,6 +4,10 @@ var subCatSchema = mongoose.Schema({
   subCatLabel: String,
 });
 
+var profileSchema = mongoose.Schema({
+  profileLabel: String,
+});
+
 var videoSchema = mongoose.Schema({
   videoUrl: String,
   videoSource: String,
@@ -15,9 +19,14 @@ var directorSchema = mongoose.Schema({
   directorLoca : String,
   directorCat : String,
   directorSubCat : [subCatSchema],
-  directorTypePrint : Boolean,
-  directorTypeFilm : Boolean,
-  directorTypeDop : Boolean,
+  directorProfile : [profileSchema],
+  // directorTypePrint : Boolean,
+  // directorTypeFilm : Boolean,
+  // directorTypeDop : Boolean,
+  // directorTypeStylist : Boolean,
+  // directorTypeHair : Boolean,
+  // directorTypeMakeup : Boolean,
+  // directorTypeSet : Boolean,
   directorSituation : String,
   directorContent : String,
   directorContactEmail : String,

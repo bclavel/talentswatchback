@@ -43,29 +43,31 @@ const getId = function(opt){
   });
 
   var subCatList = opt.directorSubCat.split(', ')
+  var profileList = opt.directorProfile.split(', ')
 
   var appBaseBody = {
-    name : opt.directorName,
-    localisation : opt.directorLoca,
-    category : opt.directorCat,
-    subcategories : subCatList,
-    print : opt.directorTypePrint,
-    film : opt.directorTypeFilm,
-    DOP : opt.directorTypeDop,
-    situation : opt.directorSituation,
-    content : opt.directorContent,
-    email : opt.directorContactEmail,
-    phone : opt.directorContactPhone,
-    label : opt.directorLabel,
-    reckitt : opt.directorReckitt,
-    contact : opt.directorContacted,
-    website : opt.directorWebsite,
-    vimeo : opt.directorVimeo,
-    instagram : opt.directorInsta,
-    video1 : opt.directorVideo1,
-    video2 : opt.directorVideo2,
-    video3 : opt.directorVideo3,
-    video4 : opt.directorVideo4
+    name: opt.directorName,
+    localisation: opt.directorLoca,
+    category: opt.directorCat,
+    subcategories: subCatList,
+    profiles: profileList,
+    // print: opt.directorTypePrint,
+    // film: opt.directorTypeFilm,
+    // DOP: opt.directorTypeDop,
+    situation: opt.directorSituation,
+    content: opt.directorContent,
+    email: opt.directorContactEmail,
+    phone: opt.directorContactPhone,
+    label: opt.directorLabel,
+    // reckitt: opt.directorReckitt,
+    contact: opt.directorContacted,
+    website: opt.directorWebsite,
+    vimeo: opt.directorVimeo,
+    instagram: opt.directorInsta,
+    video1: opt.directorVideo1,
+    video2: opt.directorVideo2,
+    video3: opt.directorVideo3,
+    video4: opt.directorVideo4
   }
 
   var appBaseData = JSON.stringify(appBaseBody)
@@ -86,47 +88,53 @@ router.post('/createdirector', function(req, res, next) {
   console.log("getId Promise data >>", data)
 
   var directorData = new directorModel({
-    directorName : req.body.directorName,
-    directorLoca : req.body.directorLoca,
-    directorCat : req.body.directorCat,
-    directorTypePrint : req.body.directorTypePrint,
-    directorTypeFilm : req.body.directorTypeFilm,
-    directorTypeDop : req.body.directorTypeDop,
-    directorSituation : req.body.directorSituation,
-    directorContent : req.body.directorContent,
-    directorContactEmail : req.body.directorContactEmail,
-    directorContactPhone : req.body.directorContactPhone,
-    directorLabel : req.body.directorLabel,
-    directorReckitt: req.body.directorReckitt,
-    directorContacted : req.body.directorContacted,
-    directorWebsite : req.body.directorWebsite,
-    directorVimeo : req.body.directorVimeo,
-    directorInsta : req.body.directorInsta,
-    directorAppbaseId : JSON.parse(data)["_id"]
+    directorName: req.body.directorName,
+    directorLoca: req.body.directorLoca,
+    directorCat: req.body.directorCat,
+    // directorTypePrint: req.body.directorTypePrint,
+    // directorTypeFilm: req.body.directorTypeFilm,
+    // directorTypeDop: req.body.directorTypeDop,
+    directorSituation: req.body.directorSituation,
+    directorContent: req.body.directorContent,
+    directorContactEmail: req.body.directorContactEmail,
+    directorContactPhone: req.body.directorContactPhone,
+    directorLabel: req.body.directorLabel,
+    // directorReckitt: req.body.directorReckitt,
+    directorContacted: req.body.directorContacted,
+    directorWebsite: req.body.directorWebsite,
+    directorVimeo: req.body.directorVimeo,
+    directorInsta: req.body.directorInsta,
+    directorAppbaseId: JSON.parse(data)["_id"]
   })
 
   directorData.directorVideos.push({
-    videoUrl : req.body.directorVideo1,
-    videoSource : 'Youtube'
+    videoUrl: req.body.directorVideo1,
+    videoSource: req.body.directorVideoSource1
   })
   directorData.directorVideos.push({
-    videoUrl : req.body.directorVideo2,
-    videoSource : 'Youtube'
+    videoUrl: req.body.directorVideo2,
+    videoSource: req.body.directorVideoSource1
   })
   directorData.directorVideos.push({
-    videoUrl : req.body.directorVideo3,
-    videoSource : 'Youtube'
+    videoUrl: req.body.directorVideo3,
+    videoSource: 'Youtube'
   })
   directorData.directorVideos.push({
-    videoUrl : req.body.directorVideo4,
-    videoSource : 'Youtube'
+    videoUrl: req.body.directorVideo4,
+    videoSource: 'Youtube'
   })
 
   var subCatList = req.body.directorSubCat.split(', ')
-
   for (var i = 0; i < subCatList.length; i++) {
     directorData.directorSubCat.push({
-      subCatLabel : subCatList[i]
+      subCatLabel: subCatList[i]
+    })
+  }
+
+  var profileList = req.body.directorProfile.split(', ')
+  for (var i = 0; i < profileList.length; i++) {
+    directorData.directorProfile.push({
+      profileLabel: profileList[i]
     })
   }
 
@@ -134,8 +142,10 @@ router.post('/createdirector', function(req, res, next) {
 
   directorData.save(
     function (error, director) {
+      if (error) {
+        console.log('CREATE DIRECTOR - error', error);
+      }
       console.log('CREATE DIRECTOR - director save', director);
-      console.log('CREATE DIRECTOR - error', error);
       res.status(200).json(director);
     });
   })
@@ -173,15 +183,15 @@ router.post('/updatedirector', function(req,res,next){
       director.directorName = req.body.directorName,
       director.directorLoca = req.body.directorLoca,
       director.directorCat = req.body.directorCat,
-      director.directorTypePrint = req.body.directorTypePrint,
-      director.directorTypeFilm = req.body.directorTypeFilm,
-      director.directorTypeDop = req.body.directorTypeDop,
+      // director.directorTypePrint = req.body.directorTypePrint,
+      // director.directorTypeFilm = req.body.directorTypeFilm,
+      // director.directorTypeDop = req.body.directorTypeDop,
       director.directorSituation = req.body.directorSituation,
       director.directorContent = req.body.directorContent,
       director.directorContactEmail = req.body.directorContactEmail,
       director.directorContactPhone = req.body.directorContactPhone,
       director.directorLabel = req.body.directorLabel,
-      director.directorReckitt = req.body.directorReckitt,
+      // director.directorReckitt = req.body.directorReckitt,
       director.directorContacted = req.body.directorContacted,
       director.directorWebsite = req.body.directorWebsite,
       director.directorVimeo = req.body.directorVimeo,
@@ -189,28 +199,34 @@ router.post('/updatedirector', function(req,res,next){
 
       director.directorVideos[0] = {
         videoUrl : req.body.directorVideo1,
-        videoSource : 'Youtube'
+        videoSource : req.body.directorVideoSource1
       }
       director.directorVideos[1] = {
         videoUrl : req.body.directorVideo2,
-        videoSource : 'Youtube'
+        videoSource : req.body.directorVideoSource2
       }
       director.directorVideos[2] = {
         videoUrl : req.body.directorVideo3,
-        videoSource : 'Youtube'
+        videoSource : req.body.directorVideoSource3
       }
       director.directorVideos[3] = {
         videoUrl : req.body.directorVideo4,
-        videoSource : 'Youtube'
+        videoSource : req.body.directorVideoSource4
       }
 
       director.directorSubCat = []
-
       var subCatList = req.body.directorSubCat.split(', ')
-
       for (var i = 0; i < subCatList.length; i++) {
         director.directorSubCat.push({
           subCatLabel : subCatList[i]
+        })
+      }
+
+      director.directorProfile = []
+      var profileList = req.body.directorProfile.split(', ')
+      for (var i = 0; i < profileList.length; i++) {
+        director.directorProfile.push({
+          profileLabel : profileList[i]
         })
       }
 
@@ -250,15 +266,16 @@ router.post('/updatedirector', function(req,res,next){
         localisation : req.body.directorLoca,
         category : req.body.directorCat,
         subcategories : subCatList,
-        print : req.body.directorTypePrint,
-        film : req.body.directorTypeFilm,
-        DOP : req.body.directorTypeDop,
+        // print : req.body.directorTypePrint,
+        // film : req.body.directorTypeFilm,
+        // DOP : req.body.directorTypeDop,
+        profiles: profileList,
         situation : req.body.directorSituation,
         content : req.body.directorContent,
         email : req.body.directorContactEmail,
         phone : req.body.directorContactPhone,
         label : req.body.directorLabel,
-        reckitt : req.body.directorReckitt,
+        // reckitt : req.body.directorReckitt,
         contact : req.body.directorContacted,
         website : req.body.directorWebsite,
         vimeo : req.body.directorVimeo,
@@ -277,8 +294,10 @@ router.post('/updatedirector', function(req,res,next){
 
       director.save(
         function (error, director) {
+          if (error) {
+            console.log('INDEX BACK - Update director error', error);
+          }
           console.log('INDEX BACK - Update director save', director);
-          console.log('INDEX BACK - Update director error', error);
           res.json(director);
         });
     } else {
