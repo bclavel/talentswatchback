@@ -20,13 +20,6 @@ var directorSchema = mongoose.Schema({
   directorCat : String,
   directorSubCat : [subCatSchema],
   directorProfile : [profileSchema],
-  // directorTypePrint : Boolean,
-  // directorTypeFilm : Boolean,
-  // directorTypeDop : Boolean,
-  // directorTypeStylist : Boolean,
-  // directorTypeHair : Boolean,
-  // directorTypeMakeup : Boolean,
-  // directorTypeSet : Boolean,
   directorSituation : String,
   directorContent : String,
   directorContactEmail : String,
@@ -40,5 +33,4 @@ var directorSchema = mongoose.Schema({
   directorVideos : [videoSchema],
 });
 
-// Export pour utilisation dans les routes (collection + schéma)
 module.exports = mongoose.model('directors', directorSchema);
