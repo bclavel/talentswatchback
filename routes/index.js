@@ -333,5 +333,62 @@ router.get('/getDirectorsList', function(req,res,next){
 
 });
 
+router.get('/deleteDirector', function(req, res, next) {
+  directorModel.deleteOne({directorAppbaseId: req.query.directorAppbaseId},
+  function (err) {
+    if (err) {
+      console.log('error', err)
+    } else {
+      console.log('director deleted')
+    }
+    var deleteDirector = directorModel.find()
+    deleteDirector.exec(function(err, directors) {
+        res.json({directors});
+      }
+    )
+  })
+
+  var https = require('https');
+
+  var optionsDelete = {
+    'method': 'DELETE',
+    'hostname': 'scalr.api.appbase.io',
+    'path': `/gpop-data2/_doc/${req.query.directorAppbaseId}`,
+    'headers': {
+      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
+      'Content-Type': 'application/json'
+    }
+  };
+
+  console.log('optionsUpdate', optionsDelete);
+
+  var updateReq = https.request(optionsDelete, function (res) {
+    var chunks = [];
+
+    res.on("data", function (chunk) {
+      chunks.push(chunk);
+    });
+
+    res.on("end", function (chunk) {
+      var body = Buffer.concat(chunks);
+      console.log('Body', body.toString());
+    });
+
+    res.on("error", function (error) {
+      console.error(error);
+    });
+  });
+
+  var appBaseBody = {
+    directorAppbaseId: req.params.directorAppbaseId
+  }
+
+  var appBaseData = JSON.stringify(appBaseBody)
+
+  updateReq.write(appBaseData);
+
+  updateReq.end();
+});
+
 
 module.exports = router;
