@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var directorModel = require('../models/director');
+var userModel = require('../models/user');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -53,7 +54,6 @@ const getId = function(opt){
     content: opt.directorContent,
     email: opt.directorContactEmail,
     phone: opt.directorContactPhone,
-    label: opt.directorLabel,
     contact: opt.directorContacted,
     website: opt.directorWebsite,
     vimeo: opt.directorVimeo,
@@ -88,7 +88,6 @@ router.post('/createdirector', function(req, res, next) {
     directorContent: req.body.directorContent,
     directorContactEmail: req.body.directorContactEmail,
     directorContactPhone: req.body.directorContactPhone,
-    directorLabel: req.body.directorLabel,
     directorContacted: req.body.directorContacted,
     directorWebsite: req.body.directorWebsite,
     directorVimeo: req.body.directorVimeo,
@@ -102,15 +101,15 @@ router.post('/createdirector', function(req, res, next) {
   })
   directorData.directorVideos.push({
     videoUrl: req.body.directorVideo2,
-    videoSource: req.body.directorVideoSource1
+    videoSource: req.body.directorVideoSource2
   })
   directorData.directorVideos.push({
     videoUrl: req.body.directorVideo3,
-    videoSource: 'Youtube'
+    videoSource: req.body.directorVideoSource3
   })
   directorData.directorVideos.push({
     videoUrl: req.body.directorVideo4,
-    videoSource: 'Youtube'
+    videoSource: req.body.directorVideoSource4
   })
 
   var subCatList = req.body.directorSubCat.split(', ')
@@ -176,7 +175,6 @@ router.post('/updatedirector', function(req,res,next){
       director.directorContent = req.body.directorContent,
       director.directorContactEmail = req.body.directorContactEmail,
       director.directorContactPhone = req.body.directorContactPhone,
-      director.directorLabel = req.body.directorLabel,
       director.directorContacted = req.body.directorContacted,
       director.directorWebsite = req.body.directorWebsite,
       director.directorVimeo = req.body.directorVimeo,
@@ -256,7 +254,6 @@ router.post('/updatedirector', function(req,res,next){
         content : req.body.directorContent,
         email : req.body.directorContactEmail,
         phone : req.body.directorContactPhone,
-        label : req.body.directorLabel,
         contact : req.body.directorContacted,
         website : req.body.directorWebsite,
         vimeo : req.body.directorVimeo,
@@ -388,6 +385,21 @@ router.get('/deleteDirector', function(req, res, next) {
   updateReq.write(appBaseData);
 
   updateReq.end();
+});
+
+router.post('/signin', function(req,res,next){
+  userModel.findOne({userPassword : req.body.userPassword})
+  .exec(function(err, user){
+    if (user) {
+      console.log('SIGNIN - User trouvé', user);
+      res.json(user);
+    } else {
+      console.log('SIGNIN - walou pas de user');
+      res.json(err);
+    }
+  })
+
+
 });
 
 

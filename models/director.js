@@ -24,8 +24,6 @@ var directorSchema = mongoose.Schema({
   directorContent : String,
   directorContactEmail : String,
   directorContactPhone: String,
-  directorLabel: String,
-  directorReckitt : String,
   directorContacted : String,
   directorWebsite : String,
   directorVimeo : String,
