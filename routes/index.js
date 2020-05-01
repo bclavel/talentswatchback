@@ -220,7 +220,7 @@ router.post('/updatedirector', function(req,res,next){
         'hostname': 'scalr.api.appbase.io',
         'path': `/gpop-proto/_doc/${director.directorAppbaseId}`,
         'headers': {
-          'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
+          'Authorization': 'Basic dFlTdkxydVpCOjBmYmVmODY0LTNhYmItNDUzNS05NTFmLTNiNjRhN2U2ZDJmZQ==',
           'Content-Type': 'application/json'
         }
       };
@@ -298,7 +298,7 @@ router.get('/getDirectorsList', function(req,res,next){
     'hostname': 'scalr.api.appbase.io',
     'path': '/gpop-proto/_search?q=*.*',
     'headers': {
-      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ=='
+      'Authorization': 'Basic dFlTdkxydVpCOjBmYmVmODY0LTNhYmItNDUzNS05NTFmLTNiNjRhN2U2ZDJmZQ=='
     }
   };
 
@@ -352,7 +352,7 @@ router.get('/deleteDirector', function(req, res, next) {
     'hostname': 'scalr.api.appbase.io',
     'path': `/gpop-proto/_doc/${req.query.directorAppbaseId}`,
     'headers': {
-      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
+      'Authorization': 'Basic dFlTdkxydVpCOjBmYmVmODY0LTNhYmItNDUzNS05NTFmLTNiNjRhN2U2ZDJmZQ==',
       'Content-Type': 'application/json'
     }
   };
