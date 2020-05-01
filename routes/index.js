@@ -15,9 +15,9 @@ const getId = function(opt){
   var options = {
     'method': 'POST',
     'hostname': 'scalr.api.appbase.io',
-    'path': '/gpop-data2/_doc',
+    'path': '/gpop-proto/_doc',
     'headers': {
-      'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
+      'Authorization': 'Basic dFlTdkxydVpCOjBmYmVmODY0LTNhYmItNDUzNS05NTFmLTNiNjRhN2U2ZDJmZQ==',
       'Content-Type': 'application/json'
     }
   };
@@ -218,7 +218,7 @@ router.post('/updatedirector', function(req,res,next){
       var optionsUpdate = {
         'method': 'PUT',
         'hostname': 'scalr.api.appbase.io',
-        'path': `/gpop-data2/_doc/${director.directorAppbaseId}`,
+        'path': `/gpop-proto/_doc/${director.directorAppbaseId}`,
         'headers': {
           'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
           'Content-Type': 'application/json'
@@ -296,7 +296,7 @@ router.get('/getDirectorsList', function(req,res,next){
   var options = {
     'method': 'POST',
     'hostname': 'scalr.api.appbase.io',
-    'path': '/gpop-data2/_search?q=*.*',
+    'path': '/gpop-proto/_search?q=*.*',
     'headers': {
       'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ=='
     }
@@ -350,7 +350,7 @@ router.get('/deleteDirector', function(req, res, next) {
   var optionsDelete = {
     'method': 'DELETE',
     'hostname': 'scalr.api.appbase.io',
-    'path': `/gpop-data2/_doc/${req.query.directorAppbaseId}`,
+    'path': `/gpop-proto/_doc/${req.query.directorAppbaseId}`,
     'headers': {
       'Authorization': 'Basic TVJ3UjB1MDZDOmMwOTAzZDQ4LTdiYWQtNGE4Zi1hZTdmLWM1YzFlMGI4YmI5YQ==',
       'Content-Type': 'application/json'
